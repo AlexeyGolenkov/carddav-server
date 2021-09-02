@@ -1,0 +1,7 @@
+authtoken: 1xBoAK07qHZoQ0aD9Fg6Q5HPHJ6_4wAbUj9k6YRyhw88aKt8D
+tunnels:
+  cds:
+    proto: http
+    addr: 5232
+    subdomain: domain
+

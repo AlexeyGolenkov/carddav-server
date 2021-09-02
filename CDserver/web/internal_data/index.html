@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script src="fn.js"></script>
+<title>Web Interface</title>
+<link href="css/main.css" media="screen" rel="stylesheet">
+<div class="back"></div>
+<input data-name="displayname" type="text"><br>
+        <br>
+        <input data-name="description" type="text"><br>
+        Type:<br>
+        <select data-name="type">
+            <option value="ADDRESSBOOK"></option>
+            <option value="CALENDAR_JOURNAL_TASKS"></option>
+            <option value="CALENDAR_JOURNAL"></option>
+            <option value="CALENDAR_TASKS"></option>
+            <option value="JOURNAL_TASKS"></option>
+            <option value="CALENDAR"></option>
+            <option value="JOURNAL"></option>
+            <option value="TASKS"></option>
+        </select><br>
+        Color:<br>
+        <input data-name="color" type="color"><br>
+        <span style="color: #A40000;" data-name="error"></span><br>
+        <button type="submit" data-name="submit"></button>
+        <button type="button" data-name="cancel"></button>
+    </form>
+</section>
+
+<section id="createcollectionscene" class="hidden">
+    <h1></h1>
+    <form>
+        <br>
+        <input data-name="displayname" type="text"><br>
+        <br>
+        <input data-name="description" type="text"><br>
+        <br>
+        <select data-name="type">
+            <option value="ADDRESSBOOK"></option>
+            <option value="CALENDAR_JOURNAL_TASKS"></option>
+            <option value="CALENDAR_JOURNAL"></option>
+            <option value="CALENDAR_TASKS"></option>
+            <option value="JOURNAL_TASKS"></option>
+            <option value="CALENDAR"></option>
+            <option value="JOURNAL"></option>
+            <option value="TASKS"></option>
+        </select><br>
+        <br>
+        <input data-name="color" type="color"><br>
+        <span style="color: #A40000;" data-name="error"></span><br>
+        <button type="submit" data-name="submit"></button>
+        <button type="button" data-name="cancel"></button>
+    </form>
+</section>
+
+<section id="uploadcollectionscene" class="hidden">
+    <h1></h1>
+    <ul>
+        <li data-name="filetemplate" class="hidden">
+                 <span data-name="name" style="word-wrap:break-word;font-weight:bold;"></span>:<br>
+                <span data-name="pending"></span>
+                <span style="color: #00A400;" data-name="success"></span>
+                <span style="color: #A40000;" data-name="error"></span>
+        </li>
+    </ul>
+    <form>
+        <button type="button" data-name="close">Close</button>
+    </form>
+</section>
+
+<section id="deletecollectionscene" class="hidden">
+    <h1></h1>
+    <h2> <span data-name="title" style="word-wrap:break-word;font-weight:bold;"></span>?</h2>
+    <span style="color: #A40000;" data-name="error"></span><br>
+    <form>
+        <button type="button" data-name="delete"></button>
+        <button type="button" data-name="cancel"></button>
+    </form>
+</section>
