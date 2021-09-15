@@ -18,7 +18,7 @@ Clone the repository
 git clone https://github.com/AlexeyGolenkov/carddav-server
 ```
 
-## Usage
+## Running the server
 
 Go to the folder
 
@@ -31,7 +31,14 @@ Run 'run.py'
 python3 run.py
 ```
 
-Enter login and password and then connect to the server using any client.
+Enter the login and password (if you use the program first time, it will create a new user)
+
+## Connecting to the server
+When you connect to the server, each client will require server name. You should type
+```bash
+https://domain.ngrok.io
+```
+Then type your login and password you entered in the previous step.
 
 ## Close the server
 
