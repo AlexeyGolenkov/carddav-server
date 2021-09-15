@@ -8,17 +8,20 @@ s = input()
 
 if s == '2':
     directory = './CDserver/collections/collection-root/' + login + '/' + '44de64b3-ff87-69cb-b042-7fe19dfa7d31'
-    files = os.listdir(directory)
-    vcf = list(filter(lambda x: x.endswith('.vcf'), files))
-    res = ''
-    for i in vcf:
-        f = open(directory + '/' + i, 'r')
-        res += f.read()
+    try:
+        files = os.listdir(directory)
+        vcf = list(filter(lambda x: x.endswith('.vcf'), files))
+        res = ''
+        for i in vcf:
+            f = open(directory + '/' + i, 'r')
+            res += f.read()
+            f.close()
+        f = open('result.vcf', 'w')
+        f.write(res)
         f.close()
-    f = open('result.vcf', 'w')
-    f.write(res)
-    f.close()
-    print(res)
+        print(res)
+    except:
+        print('The user does not exist. The server with this user was never started. Start the server and then try to pull contacts')
 else:
     result = open('log_info', 'w')
     result.write(login + '\n' + password)
