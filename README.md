@@ -42,17 +42,7 @@ Then type your login and password you entered in the previous step.
 
 ## Close the server
 
-Look at all opened containers
-
+In another terminal window run the next command and wait for a while until the program is completed
 ```bash
-docker ps -a
-```
-
-Find the one whose IMAGE name is 'carddavserver', copy its CONTAINER ID and run the next commands
-
-```bash
-docker container stop <container_id>
-```
-```bash
-docker container rm <container_id>
+python3 stop.py
 ```
