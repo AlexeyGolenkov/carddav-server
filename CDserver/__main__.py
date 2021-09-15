@@ -10,18 +10,6 @@ from CDserver.log import logger
 
 
 def run():
-    exit_signal_numbers = [signal.SIGTERM, signal.SIGINT]
-    if os.name == "posix":
-        exit_signal_numbers.append(signal.SIGHUP)
-        exit_signal_numbers.append(signal.SIGQUIT)
-    elif os.name == "nt":
-        exit_signal_numbers.append(signal.SIGBREAK)
-
-    def exit_signal_handler(signal_number, stack_frame):
-        sys.exit(1)
-    for signal_number in exit_signal_numbers:
-        signal.signal(signal_number, exit_signal_handler)
-
     log.setup()
 
     parser = argparse.ArgumentParser(
@@ -129,8 +117,6 @@ def run():
 
     def shutdown_signal_handler(signal_number, stack_frame):
         shutdown_socket.close()
-    for signal_number in exit_signal_numbers:
-        signal.signal(signal_number, shutdown_signal_handler)
 
     try:
         server.serve(configuration, shutdown_socket_out, login)
