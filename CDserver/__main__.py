@@ -11,7 +11,7 @@ from CDserver.log import logger
 
 def run():
     log.setup()
-
+    
     parser = argparse.ArgumentParser(
         prog="CDserver", usage="%(prog)s [OPTIONS]", allow_abbrev=False)
 
@@ -22,7 +22,7 @@ def run():
         "-C", "--config", help="use specific configuration files", nargs="*")
     parser.add_argument("-D", "--debug", action="store_true",
                         help="print debug information")
-
+    
     groups = {}
     for section, values in config.DEFAULT_CONFIG_SCHEMA.items():
         if section.startswith("_"):
@@ -88,24 +88,7 @@ def run():
         logger.fatal("Invalid configuration: %s", e, exc_info=True)
         sys.exit(1)
 
-    log.set_level(configuration.get("logging", "level"))
 
-    for source, miss in configuration.sources():
-        logger.info("%s %s", "Skipped missing" if miss else "Loaded", source)
-
-    if args.verify_storage:
-        logger.info("Verifying storage")
-        try:
-            storage_ = storage.load(configuration)
-            with storage_.acquire_lock("r"):
-                if not storage_.verify():
-                    logger.fatal("Storage verifcation failed")
-                    sys.exit(1)
-        except Exception as e:
-            logger.fatal("An exception occurred during storage verification: "
-                         "%s", e, exc_info=True)
-            sys.exit(1)
-        return
     login = input()
     password = input()
     f = open('CDserver/web/internal_data/template.txt', 'r')
@@ -113,6 +96,9 @@ def run():
     result.write(f.read().replace('PlaceToChange', login))
     result.close()
     f.close()
+
+
+
     shutdown_socket, shutdown_socket_out = socket.socketpair()
 
     def shutdown_signal_handler(signal_number, stack_frame):
