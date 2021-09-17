@@ -29,16 +29,14 @@ Run 'run.py'
 python3 run.py
 ```
 
+If the program returns 'Permission denied', put 'sudo' before the command.
+
 Enter the login and password (if you use the program first time, it will create a new user)
 
 ## Connecting to the server
 When you connect to the server, each client will require server name. You should type
 ```bash
-https://<your_login>-cdserver.ngrok.io
-```
-For example, if your login is 'test' then you should type
-```bash
-https://test-cdserver.ngrok.io
+https://cdserver.ngrok.io
 ```
 Then type your login and password you entered in the previous step.
 
