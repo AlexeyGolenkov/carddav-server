@@ -54,8 +54,9 @@ else:
 
     try:
         shutil.copytree('collection-root/' + login, 'CDserver/collections/collection-root/' + login)
-        shutil.rmtree('collection-root/' + login)
+        shutil.rmtree('collection-root/')
     except:
         print('interesting')
 
     os.remove('log_info')
+    os.remove('config.yml')
