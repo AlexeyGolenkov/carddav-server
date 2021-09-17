@@ -1,4 +1,8 @@
 import os
+import hashlib
+
+def gen(login):
+    return login + "-cdserver"
 
 login = input('Login: ')
 password = input('Password: ')
@@ -26,6 +30,15 @@ else:
     result = open('log_info', 'w')
     result.write(login + '\n' + password)
     result.close()
+
+    conf = open('config.yml', "w")
+    conf.write('authtoken: 1xBoAK07qHZoQ0aD9Fg6Q5HPHJ6_4wAbUj9k6YRyhw88aKt8D\n')
+    conf.write('tunnels:\n')
+    conf.write('    cds:\n')
+    conf.write('        proto: http\n')
+    conf.write('        addr: 5232\n')
+    conf.write('        subdomain: ' + gen(login))
+    conf.close()
 
     import shutil
     try:
