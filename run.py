@@ -2,7 +2,7 @@ import os
 import hashlib
 
 def gen(login):
-    return login + "-cdserver"
+    return 'cdserver'
 
 login = input('Login: ')
 password = input('Password: ')
@@ -11,7 +11,7 @@ print('What do you want to do? Run server(1) or export contacts(2)')
 s = input()
 
 if s == '2':
-    directory = './CDserver/collections/collection-root/' + login + '/' + '44de64b3-ff87-69cb-b042-7fe19dfa7d31'
+    directory = './CDserver/collections/collection-root/' + login + '/' + 'contacts'
     try:
         files = os.listdir(directory)
         vcf = list(filter(lambda x: x.endswith('.vcf'), files))
@@ -59,5 +59,5 @@ else:
         print('interesting')
 
     os.remove('log_info')
-    
+
     os.remove('config.yml')

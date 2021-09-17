@@ -241,7 +241,12 @@ def serve(configuration, shutdown_socket=None, login=None):
                 preffix = './CDserver/collections/collection-root'
                 import shutil
                 try:
-                    shutil.copytree('CDserver/44de64b3-ff87-69cb-b042-7fe19dfa7d31', preffix + '/' + login + '/' + '44de64b3-ff87-69cb-b042-7fe19dfa7d31')
+                    print('here')
+                    dirr = preffix + '/' + login + '/' + 'contacts'
+                    os.makedirs(dirr)
+                    props = open(dirr + '/' + '.CDserver.props', "w")
+                    props.write('{"CR:addressbook-description": "description", "D:displayname": "contacts", "tag": "VADDRESSBOOK", "{http://inf-it.com/ns/ab/}addressbook-color": "#9b9eb4ff"}')
+                    props.close()
                 except Exception as e:
                     print(e)
 
