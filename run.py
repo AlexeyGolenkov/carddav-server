@@ -59,4 +59,5 @@ else:
         print('interesting')
 
     os.remove('log_info')
+    
     os.remove('config.yml')
