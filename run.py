@@ -7,10 +7,33 @@ def gen(login):
 login = input('Login: ')
 password = input('Password: ')
 
-print('What do you want to do? Run server(1) or export contacts(2)')
+print('What do you want to do? 1 - Run server. 2 - export contacts. 3 - import contacts.')
 s = input()
 
-if s == '2':
+if s == '3':
+    path = input('path to contacts - ')
+    try:
+        file = open(path)
+        lines = file.readlines()
+        file.close()
+        i = 0
+        cur = ""
+        for line in lines:
+            cur += line
+            if line == 'END:VCARD\n':
+                cur_dir = 'CDserver/collections/collection-root/' + login + '/contacts'
+                try:
+                    os.makedirs(cur_dir)
+                except:
+                    pass
+                out = open(cur_dir + '/' + str(i) + '.vcf', "w")
+                out.write(cur)
+                out.close()
+                cur = ""
+                i += 1
+    except:
+        print('couldn\'t open the contacts file')
+elif s == '2':
     directory = './CDserver/collections/collection-root/' + login + '/' + 'contacts'
     try:
         files = os.listdir(directory)
