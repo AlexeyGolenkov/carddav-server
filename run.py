@@ -70,7 +70,7 @@ else:
     except:
         print('new user')
 
-    dname = login + '-carddavserver'
+    dname = login.lower() + '-carddavserver'
     cmd = 'docker build -t ' + dname + ' .'
     os.system(cmd)
     cmd = 'docker run -v `pwd`:/CDserver/collections -p 5232:5232 ' + dname
