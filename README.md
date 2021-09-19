@@ -47,7 +47,7 @@ Then type your login and password you entered in the previous step.
 
 ## Close the server
 
-In another terminal window run the following command and wait for a while until the program is completed
+In another terminal window run the following command, type the login of the account which server you want to stop and wait for a while until the program is completed
 ```bash
 python3 stop.py
 ```
