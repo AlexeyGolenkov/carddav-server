@@ -1,5 +1,7 @@
 import os
 
+login = input('login: ')
+
 cmd = 'docker ps -a > containers'
 os.system(cmd)
 
@@ -7,11 +9,14 @@ file = open('containers', 'r')
 lines = file.readlines()
 
 for line in lines:
-    if line.find('carddavserver') != -1:
+    if line.find(login + '-carddavserver') != -1:
         os.system('docker container stop ' + line.split(' ')[0])
         os.system('docker container rm ' + line.split(' ')[0])
 
 import shutil
-os.remove('containers')
+try:
+    os.remove('containers')
+except:
+    pass
 
 file.close()
