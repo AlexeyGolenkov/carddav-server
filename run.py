@@ -2,7 +2,7 @@ import os
 import hashlib
 
 def gen(login):
-    return 'cdserver'
+    return login + '-cdserver'
 
 login = input('Login: ')
 password = input('Password: ')
@@ -70,9 +70,10 @@ else:
     except:
         print('new user')
 
-    cmd = 'docker build -t carddavserver .'
+    dname = login + '-carddavserver'
+    cmd = 'docker build -t ' + dname + ' .'
     os.system(cmd)
-    cmd = 'docker run -v `pwd`:/CDserver/collections -p 5232:5232 carddavserver'
+    cmd = 'docker run -v `pwd`:/CDserver/collections -p 5232:5232 ' + dname
     os.system(cmd)
 
     try:
@@ -81,6 +82,12 @@ else:
     except:
         print('interesting')
 
-    os.remove('log_info')
+    try:
+        os.remove('log_info')
+    except:
+        pass
 
-    os.remove('config.yml')
+    try:
+        os.remove('config.yml')
+    except:
+        pass
