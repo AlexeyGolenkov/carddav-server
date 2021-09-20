@@ -8,7 +8,6 @@ import sys
 from CDserver import VERSION, config, log, server, storage
 from CDserver.log import logger
 
-
 def run():
     log.setup()
     
