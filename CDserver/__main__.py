@@ -87,16 +87,7 @@ def run():
         logger.fatal("Invalid configuration: %s", e, exc_info=True)
         sys.exit(1)
 
-
     login = input()
-    password = input()
-    f = open('CDserver/web/internal_data/template.txt', 'r')
-    result = open('CDserver/web/internal_data/fn.js', 'w')
-    result.write(f.read().replace('PlaceToChange', login))
-    result.close()
-    f.close()
-
-
 
     shutdown_socket, shutdown_socket_out = socket.socketpair()
 
