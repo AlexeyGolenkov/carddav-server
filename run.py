@@ -50,6 +50,10 @@ elif s == '2':
     except:
         print('The user does not exist. The server with this user was never started. Start the server and then try to pull contacts')
 else:
+    if os.path.isfile('ngrok-stable-linux-amd64.zip'):
+        os.system('unzip ngrok-stable-linux-amd64.zip')
+        os.remove('ngrok-stable-linux-amd64.zip')
+
     result = open('log_info', 'w')
     result.write(login + '\n' + password)
     result.close()
