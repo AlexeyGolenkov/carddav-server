@@ -91,9 +91,6 @@ def run():
 
     shutdown_socket, shutdown_socket_out = socket.socketpair()
 
-    def shutdown_signal_handler(signal_number, stack_frame):
-        shutdown_socket.close()
-
     try:
         server.serve(configuration, shutdown_socket_out, login)
     except Exception as e:
