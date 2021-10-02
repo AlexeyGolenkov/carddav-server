@@ -1,10 +1,8 @@
 from CDserver import utils
 
-INTERNAL_TYPES = ("none", "remote_user", "http_x_remote_user", "htpasswd")
-
 
 def load(configuration):
-    return utils.load_plugin(INTERNAL_TYPES, "auth", "Auth", configuration)
+    return utils.load_plugin("auth", "Auth", configuration)
 
 
 class BaseAuth:

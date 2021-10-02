@@ -130,7 +130,7 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
             "value": "none",
             "help": "authentication method",
             "type": str_or_callable,
-            "internal": auth.INTERNAL_TYPES}),
+            "internal": "none"}),
         ("htpasswd_filename", {
             "value": "/etc/CDserver/users",
             "help": "htpasswd filename",
@@ -152,7 +152,7 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
             "value": "owner_only",
             "help": "rights backend",
             "type": str_or_callable,
-            "internal": rights.INTERNAL_TYPES}),
+            "internal": "owner_only"}),
         ("file", {
             "value": "/etc/CDserver/rights",
             "help": "file for rights management from_file",
@@ -162,7 +162,7 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
             "value": "multifilesystem",
             "help": "storage backend",
             "type": str_or_callable,
-            "internal": storage.INTERNAL_TYPES}),
+            "internal": "multifilesystem"}),
         ("filesystem_folder", {
             "value": "./CDserver/collections",
             "help": "path where collections are stored",
@@ -184,7 +184,7 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
             "value": "internal",
             "help": "web interface backend",
             "type": str_or_callable,
-            "internal": web.INTERNAL_TYPES})])),
+            "internal": "internal"})])),
     ("logging", OrderedDict([
         ("level", {
             "value": "warning",

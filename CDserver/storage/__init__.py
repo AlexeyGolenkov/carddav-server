@@ -7,15 +7,12 @@ import vobject
 from CDserver import utils
 from CDserver.item import filter as CDserver_filter
 
-INTERNAL_TYPES = ("multifilesystem",)
-
 CACHE_DEPS = ("CDserver", "vobject", "python-dateutil",)
 CACHE_VERSION = '3.0.6;0.9.6.1;2.8.1;'.encode()
 
 
 def load(configuration):
-    return utils.load_plugin(
-        INTERNAL_TYPES, "storage", "Storage", configuration)
+    return utils.load_plugin("storage", "Storage", configuration)
 
 
 class ComponentExistsError(ValueError):
