@@ -1,10 +1,7 @@
 from CDserver import httputils, utils
 
-INTERNAL_TYPES = ("none", "internal")
-
-
 def load(configuration):
-    return utils.load_plugin(INTERNAL_TYPES, "web", "Web", configuration)
+    return utils.load_plugin("web", "Web", configuration)
 
 
 class BaseWeb:
