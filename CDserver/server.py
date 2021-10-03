@@ -21,8 +21,6 @@ elif hasattr(socket, "EAI_NONAME"):
     COMPAT_EAI_NODATA = socket.EAI_NONAME
 if hasattr(socket, "IPPROTO_IPV6"):
     COMPAT_IPPROTO_IPV6 = socket.IPPROTO_IPV6
-elif os.name == "nt":
-    COMPAT_IPPROTO_IPV6 = 41
 
 
 def format_address(address):
@@ -241,7 +239,6 @@ def serve(configuration, shutdown_socket=None, login=None):
                 preffix = './CDserver/collections/collection-root'
                 import shutil
                 try:
-                    print('here')
                     dirr = preffix + '/' + login + '/' + 'contacts'
                     os.makedirs(dirr)
                     props = open(dirr + '/' + '.CDserver.props', "w")

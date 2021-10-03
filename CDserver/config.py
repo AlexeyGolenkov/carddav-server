@@ -7,10 +7,6 @@ from configparser import RawConfigParser
 
 from CDserver import auth, rights, storage, web
 
-DEFAULT_CONFIG_PATH = os.pathsep.join([
-    "?/etc/CDserver/config",
-    "?~/.config/CDserver/config"])
-
 
 def positive_int(value):
     value = int(value)
@@ -197,42 +193,8 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
     ("headers", OrderedDict([
         ("_allow_extra", str)]))])
 
-
-def parse_compound_paths(*compound_paths):
-    compound_path = ""
-    for p in compound_paths:
-        if p is not None:
-            compound_path = p
-    paths = []
-    for path in compound_path.split(os.pathsep):
-        ignore_if_missing = path.startswith("?")
-        if ignore_if_missing:
-            path = path[1:]
-        path = filepath(path)
-        if path:
-            paths.append((path, ignore_if_missing))
-    return paths
-
-
-def load(paths=()):
-    configuration = Configuration(DEFAULT_CONFIG_SCHEMA)
-    for path, ignore_if_missing in paths:
-        parser = RawConfigParser()
-        config_source = "config file %r" % path
-        try:
-            if not parser.read(path):
-                config = Configuration.SOURCE_MISSING
-                if not ignore_if_missing:
-                    raise RuntimeError("No such file: %r" % path)
-            else:
-                config = {s: {o: parser[s][o] for o in parser.options(s)}
-                          for s in parser.sections()}
-        except Exception as e:
-            raise RuntimeError(
-                "Failed to load %s: %s" % (config_source, e)) from e
-        configuration.update(config, config_source)
-    return configuration
-
+def load():
+    return Configuration(DEFAULT_CONFIG_SCHEMA)
 
 class Configuration:
     SOURCE_MISSING = {}
