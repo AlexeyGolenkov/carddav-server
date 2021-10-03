@@ -11,11 +11,7 @@ from CDserver.log import logger
 def run():
     log.setup()
     
-    try:
-        configuration = config.load()
-    except Exception as e:
-        logger.fatal("Invalid configuration: %s", e, exc_info=True)
-        sys.exit(1)
+    configuration = config.load()
 
     login = input()
 
