@@ -22,9 +22,7 @@ def _init_application(config_path, wsgi_errors):
         log.setup()
         with log.register_stream(wsgi_errors):
             _application_config_path = config_path
-            configuration = config.load(config.parse_compound_paths(
-                config.DEFAULT_CONFIG_PATH,
-                config_path))
+            configuration = config.load()
             log.set_level(configuration.get("logging", "level"))
             for source, miss in configuration.sources():
                 logger.info("%s %s", "Skipped missing" if miss else "Loaded",

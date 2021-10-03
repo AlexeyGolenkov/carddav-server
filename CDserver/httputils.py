@@ -4,10 +4,10 @@ from CDserver.log import logger
 
 NOT_ALLOWED = (
     client.FORBIDDEN, (("Content-Type", "text/plain"),),
-    "Access to the requested resource forbidden.")
+    "Access to the requested resource is forbidden.")
 FORBIDDEN = (
     client.FORBIDDEN, (("Content-Type", "text/plain"),),
-    "Action on the requested resource refused.")
+    "Action on the requested resource is refused.")
 BAD_REQUEST = (
     client.BAD_REQUEST, (("Content-Type", "text/plain"),), "Bad Request")
 NOT_FOUND = (

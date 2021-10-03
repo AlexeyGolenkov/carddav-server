@@ -24,8 +24,6 @@ def run():
     
     groups = {}
     for section, values in config.DEFAULT_CONFIG_SCHEMA.items():
-        if section.startswith("_"):
-            continue
         group = parser.add_argument_group(section)
         groups[group] = []
         for option, data in values.items():
@@ -77,10 +75,7 @@ def run():
             arguments_config[section] = section_config
 
     try:
-        configuration = config.load(config.parse_compound_paths(
-            config.DEFAULT_CONFIG_PATH,
-            os.environ.get("CDserver_CONFIG"),
-            os.pathsep.join(args.config) if args.config else None))
+        configuration = config.load()
         if arguments_config:
             configuration.update(arguments_config, "arguments")
     except Exception as e:
