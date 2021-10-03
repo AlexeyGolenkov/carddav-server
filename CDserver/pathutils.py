@@ -4,63 +4,25 @@ import posixpath
 import sys
 import threading
 from tempfile import TemporaryDirectory
+from CDserver.log import logger
 
-if os.name == "nt":
-    import ctypes
-    import ctypes.wintypes
-    import msvcrt
-
-    LOCKFILE_EXCLUSIVE_LOCK = 2
-    if ctypes.sizeof(ctypes.c_void_p) == 4:
-        ULONG_PTR = ctypes.c_uint32
-    else:
-        ULONG_PTR = ctypes.c_uint64
-
-    class Overlapped(ctypes.Structure):
-        _fields_ = [
-            ("internal", ULONG_PTR),
-            ("internal_high", ULONG_PTR),
-            ("offset", ctypes.wintypes.DWORD),
-            ("offset_high", ctypes.wintypes.DWORD),
-            ("h_event", ctypes.wintypes.HANDLE)]
-
-    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
-    lock_file_ex = kernel32.LockFileEx
-    lock_file_ex.argtypes = [
-        ctypes.wintypes.HANDLE,
-        ctypes.wintypes.DWORD,
-        ctypes.wintypes.DWORD,
-        ctypes.wintypes.DWORD,
-        ctypes.wintypes.DWORD,
-        ctypes.POINTER(Overlapped)]
-    lock_file_ex.restype = ctypes.wintypes.BOOL
-    unlock_file_ex = kernel32.UnlockFileEx
-    unlock_file_ex.argtypes = [
-        ctypes.wintypes.HANDLE,
-        ctypes.wintypes.DWORD,
-        ctypes.wintypes.DWORD,
-        ctypes.wintypes.DWORD,
-        ctypes.POINTER(Overlapped)]
-    unlock_file_ex.restype = ctypes.wintypes.BOOL
-elif os.name == "posix":
-    import fcntl
+import fcntl
 
 HAVE_RENAMEAT2 = False
-if sys.platform == "linux":
-    import ctypes
+import ctypes
 
-    RENAME_EXCHANGE = 2
-    try:
-        renameat2 = ctypes.CDLL(None, use_errno=True).renameat2
-    except AttributeError:
-        pass
-    else:
-        HAVE_RENAMEAT2 = True
-        renameat2.argtypes = [
-            ctypes.c_int, ctypes.c_char_p,
-            ctypes.c_int, ctypes.c_char_p,
-            ctypes.c_uint]
-        renameat2.restype = ctypes.c_int
+RENAME_EXCHANGE = 2
+try:
+    renameat2 = ctypes.CDLL(None, use_errno=True).renameat2
+except AttributeError:
+    pass
+else:
+    HAVE_RENAMEAT2 = True
+    renameat2.argtypes = [
+        ctypes.c_int, ctypes.c_char_p,
+        ctypes.c_int, ctypes.c_char_p,
+        ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
 
 
 class RwLock:
@@ -84,30 +46,10 @@ class RwLock:
         if mode not in "rw":
             raise ValueError("Invalid mode: %r" % mode)
         with open(self._path, "w+") as lock_file:
-            if os.name == "nt":
-                handle = msvcrt.get_osfhandle(lock_file.fileno())
-                flags = LOCKFILE_EXCLUSIVE_LOCK if mode == "w" else 0
-                overlapped = Overlapped()
-                try:
-                    if not lock_file_ex(handle, flags, 0, 1, 0, overlapped):
-                        raise ctypes.WinError()
-                except OSError as e:
-                    raise RuntimeError("Locking the storage failed: %s" %
-                                       e) from e
-            elif os.name == "posix":
-                _cmd = fcntl.LOCK_EX if mode == "w" else fcntl.LOCK_SH
-                try:
-                    fcntl.flock(lock_file.fileno(), _cmd)
-                except OSError as e:
-                    raise RuntimeError("Locking the storage failed: %s" %
-                                       e) from e
-            else:
-                raise RuntimeError("Locking the storage failed: "
-                                   "Unsupported operating system")
+            _cmd = fcntl.LOCK_EX if mode == "w" else fcntl.LOCK_SH
+            fcntl.flock(lock_file.fileno(), _cmd)
+
             with self._lock:
-                if self._writer or mode == "w" and self._readers != 0:
-                    raise RuntimeError("Locking the storage failed: "
-                                       "Guarantees failed")
                 if mode == "r":
                     self._readers += 1
                 else:
