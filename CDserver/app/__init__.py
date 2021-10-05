@@ -2,6 +2,7 @@ import base64
 import datetime
 import io
 import logging
+from os import environ
 import posixpath
 import pprint
 import random
@@ -18,7 +19,6 @@ from CDserver import (auth, httputils, log, pathutils, rights, storage, web,
 from CDserver.app.delete import ApplicationDeleteMixin
 from CDserver.app.get import ApplicationGetMixin
 from CDserver.app.head import ApplicationHeadMixin
-from CDserver.app.mkcalendar import ApplicationMkcalendarMixin
 from CDserver.app.mkcol import ApplicationMkcolMixin
 from CDserver.app.move import ApplicationMoveMixin
 from CDserver.app.options import ApplicationOptionsMixin
@@ -29,15 +29,14 @@ from CDserver.app.put import ApplicationPutMixin
 from CDserver.app.report import ApplicationReportMixin
 from CDserver.log import logger
 
-import defusedxml.ElementTree as DefusedET  # isort: skip
+import defusedxml.ElementTree as DefusedET
 sys.modules["xml.etree"].ElementTree = ET
 
 VERSION = "3.0.6"
 
 
 class Application(
-        ApplicationDeleteMixin, ApplicationGetMixin, ApplicationHeadMixin,
-        ApplicationMkcalendarMixin, ApplicationMkcolMixin,
+        ApplicationDeleteMixin, ApplicationGetMixin, ApplicationHeadMixin, ApplicationMkcolMixin,
         ApplicationMoveMixin, ApplicationOptionsMixin,
         ApplicationPropfindMixin, ApplicationProppatchMixin,
         ApplicationPostMixin, ApplicationPutMixin,
@@ -166,52 +165,15 @@ class Application(
             return response(*httputils.NOT_FOUND)
 
         login = password = ""
-        external_login = self._auth.get_external_login(environ)
+
         authorization = environ.get("HTTP_AUTHORIZATION", "")
-        if external_login:
-            login, password = external_login
-            login, password = login or "", password or ""
-        elif authorization.startswith("Basic"):
+        if authorization.startswith("Basic"):
             authorization = authorization[len("Basic"):].strip()
             login, password = httputils.decode_request(
                 self.configuration, environ, base64.b64decode(
                     authorization.encode("ascii"))).split(":", 1)
 
         user = self._auth.login(login, password) or "" if login else ""
-        if user and login == user:
-            logger.info("Successful login: %r", user)
-        elif user:
-            logger.info("Successful login: %r -> %r", login, user)
-        elif login:
-            logger.warning("Failed login attempt from %s: %r",
-                           remote_host, login)
-            delay = self.configuration.get("auth", "delay")
-            if delay > 0:
-                random_delay = delay * (0.5 + random.random())
-                logger.debug("Sleeping %.3f seconds", random_delay)
-                time.sleep(random_delay)
-
-        if user and not pathutils.is_safe_path_component(user):
-            logger.info("Refused unsafe username: %r", user)
-            user = ""
-
-        if user:
-            principal_path = "/%s/" % user
-            with self._storage.acquire_lock("r", user):
-                principal = next(self._storage.discover(
-                    principal_path, depth="1"), None)
-            if not principal:
-                if "W" in self._rights.authorization(user, principal_path):
-                    with self._storage.acquire_lock("w", user):
-                        try:
-                            self._storage.create_collection(principal_path)
-                        except ValueError as e:
-                            logger.warning("Failed to create principal "
-                                           "collection %r: %s", user, e)
-                            user = ""
-                else:
-                    logger.warning("Access to principal path %r denied by "
-                                   "rights backend", principal_path)
 
         if self.configuration.get("server", "_internal_server"):
             content_length = int(environ.get("CONTENT_LENGTH") or 0)
@@ -231,8 +193,7 @@ class Application(
         else:
             status, headers, answer = httputils.NOT_ALLOWED
 
-        if ((status, headers, answer) == httputils.NOT_ALLOWED and not user and
-                not external_login):
+        if ((status, headers, answer) == httputils.NOT_ALLOWED and not user):
             logger.debug("Asking client for authentication")
             status = client.UNAUTHORIZED
             realm = self.configuration.get("auth", "realm")
