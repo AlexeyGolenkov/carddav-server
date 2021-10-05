@@ -9,8 +9,5 @@ class BaseAuth:
     def __init__(self, configuration):
         self.configuration = configuration
 
-    def get_external_login(self, environ):
-        return ()
-
     def login(self, login, password):
         raise NotImplementedError
