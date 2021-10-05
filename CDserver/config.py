@@ -75,10 +75,6 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
             "help": "set server hostnames including ports",
             "aliases": ("-H", "--hosts",),
             "type": list_of_ip_address}),
-        ("max_connections", {
-            "value": "8",
-            "help": "maximum number of parallel connections",
-            "type": positive_int}),
         ("max_content_length", {
             "value": "100000000",
             "help": "maximum size of request body in bytes",
