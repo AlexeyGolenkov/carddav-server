@@ -3,7 +3,6 @@ import os
 import select
 import socket
 import socketserver
-import ssl
 import sys
 import wsgiref.simple_server
 from urllib.parse import unquote
@@ -71,53 +70,6 @@ class ParallelHTTPServer(socketserver.ThreadingMixIn,
             logger.error("An exception occurred during request: %s",
                          sys.exc_info()[1], exc_info=True)
 
-
-class ParallelHTTPSServer(ParallelHTTPServer):
-
-    def server_bind(self):
-        super().server_bind()
-        certfile = self.configuration.get("server", "certificate")
-        keyfile = self.configuration.get("server", "key")
-        cafile = self.configuration.get("server", "certificate_authority")
-        for name, filename in [("certificate", certfile), ("key", keyfile),
-                               ("certificate_authority", cafile)]:
-            type_name = config.DEFAULT_CONFIG_SCHEMA["server"][name][
-                "type"].__name__
-            source = self.configuration.get_source("server", name)
-            if name == "certificate_authority" and not filename:
-                continue
-            try:
-                open(filename, "r").close()
-            except OSError as e:
-                raise RuntimeError(
-                    "Invalid %s value for option %r in section %r in %s: %r "
-                    "(%s)" % (type_name, name, "server", source, filename,
-                              e)) from e
-        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        context.load_cert_chain(certfile=certfile, keyfile=keyfile)
-        if cafile:
-            context.load_verify_locations(cafile=cafile)
-            context.verify_mode = ssl.CERT_REQUIRED
-        self.socket = context.wrap_socket(
-            self.socket, server_side=True, do_handshake_on_connect=False)
-
-    def finish_request_locked(self, request, client_address):
-        try:
-            try:
-                request.do_handshake()
-            except socket.timeout:
-                raise
-            except Exception as e:
-                raise RuntimeError("SSL handshake failed: %s" % e) from e
-        except Exception:
-            try:
-                self.handle_error(request, client_address)
-            finally:
-                self.shutdown_request(request)
-            return
-        return super().finish_request_locked(request, client_address)
-
-
 class ServerHandler(wsgiref.simple_server.ServerHandler):
 
     os_environ = {}
@@ -168,8 +120,6 @@ def serve(configuration, shutdown_socket=None, login=None):
     configuration.update({"server": {"_internal_server": "True"}}, "server",
                          privileged=True)
 
-    use_ssl = configuration.get("server", "ssl")
-    server_class = ParallelHTTPSServer if use_ssl else ParallelHTTPServer
     application = Application(configuration)
     servers = {}
     try:
@@ -177,14 +127,11 @@ def serve(configuration, shutdown_socket=None, login=None):
         possible_families = (socket.AF_INET, socket.AF_INET6)
         for family in possible_families:
             try:
-                server = server_class(configuration, family, address, RequestHandler)
+                server = ParallelHTTPServer(configuration, family, address, RequestHandler)
             except:
                 continue
             servers[server.socket] = server
             server.set_app(application)
-            logger.info("Listening on %r%s",
-                        format_address(server.server_address),
-                        " with SSL" if use_ssl else "")
 
 
         
@@ -231,7 +178,6 @@ def serve(configuration, shutdown_socket=None, login=None):
                 print(e)
 
     finally:
-        # Wait for clients to finish and close servers
         for server in servers.values():
             for s in server.client_sockets:
                 s.recv(1)
