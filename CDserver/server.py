@@ -173,47 +173,32 @@ def serve(configuration, shutdown_socket=None, login=None):
     application = Application(configuration)
     servers = {}
     try:
-        for address in configuration.get("server", "hosts"):
-            possible_families = (socket.AF_INET, socket.AF_INET6)
-            bind_ok = False
-            for i, family in enumerate(possible_families):
-                is_last = i == len(possible_families) - 1
-                try:
-                    server = server_class(configuration, family, address,
-                                          RequestHandler)
-                except OSError as e:
-                    if ((bind_ok or not is_last) and (
-                            isinstance(e, socket.gaierror) and (
-                                e.errno == socket.EAI_NONAME or
-                                e.errno == COMPAT_EAI_ADDRFAMILY or
-                                e.errno == COMPAT_EAI_NODATA) or
-                            str(e) == "address family mismatched" or
-                            e.errno == errno.EADDRNOTAVAIL or
-                            e.errno == errno.EAFNOSUPPORT or
-                            e.errno == errno.EPROTONOSUPPORT)):
-                        continue
-                    raise RuntimeError("Failed to start server %r: %s" % (
-                                           format_address(address), e)) from e
-                servers[server.socket] = server
-                bind_ok = True
-                server.set_app(application)
-                logger.info("Listening on %r%s",
-                            format_address(server.server_address),
-                            " with SSL" if use_ssl else "")
+        address = ('localhost', 5232)
+        possible_families = (socket.AF_INET, socket.AF_INET6)
+        for family in possible_families:
+            try:
+                server = server_class(configuration, family, address, RequestHandler)
+            except:
+                continue
+            servers[server.socket] = server
+            server.set_app(application)
+            logger.info("Listening on %r%s",
+                        format_address(server.server_address),
+                        " with SSL" if use_ssl else "")
+
+
+        
         if not servers:
             raise RuntimeError("No servers started")
 
         select_timeout = None
-        if os.name == "nt":
-            select_timeout = 1.0
-        max_connections = configuration.get("server", "max_connections")
-        logger.info("CDserver server ready")
-        t = True
+        max_connections = 8
+        logger.info("CDserver server is ready")
         while True:
             rlist = []
             for server in servers.values():
                 rlist.extend(server.client_sockets)
-            if max_connections <= 0 or len(rlist) < max_connections:
+            if len(rlist) < max_connections:
                 rlist.extend(servers)
             if shutdown_socket is not None:
                 rlist.append(shutdown_socket)
@@ -234,18 +219,16 @@ def serve(configuration, shutdown_socket=None, login=None):
                 server = servers.get(rlist.pop())
                 if server:
                     server.handle_request()
-            if t:
-                t = False
-                preffix = './CDserver/collections/collection-root'
-                import shutil
-                try:
-                    dirr = preffix + '/' + login + '/' + 'contacts'
-                    os.makedirs(dirr)
-                    props = open(dirr + '/' + '.CDserver.props', "w")
-                    props.write('{"CR:addressbook-description": "description", "D:displayname": "contacts", "tag": "VADDRESSBOOK", "{http://inf-it.com/ns/ab/}addressbook-color": "#9b9eb4ff"}')
-                    props.close()
-                except Exception as e:
-                    print(e)
+
+            preffix = './CDserver/collections/collection-root'
+            try:
+                dirr = preffix + '/' + login + '/' + 'contacts'
+                os.makedirs(dirr)
+                props = open(dirr + '/' + '.CDserver.props', "w")
+                props.write('{"CR:addressbook-description": "description", "D:displayname": "contacts", "tag": "VADDRESSBOOK", "{http://inf-it.com/ns/ab/}addressbook-color": "#9b9eb4ff"}')
+                props.close()
+            except Exception as e:
+                print(e)
 
     finally:
         # Wait for clients to finish and close servers
