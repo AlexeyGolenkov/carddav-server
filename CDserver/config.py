@@ -83,12 +83,6 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
             "value": "30",
             "help": "socket timeout",
             "type": positive_float}),
-        ("ssl", {
-            "value": "False",
-            "help": "use SSL connection",
-            "aliases": ("-s", "--ssl",),
-            "opposite": ["-S", "--no-ssl"],
-            "type": bool}),
         ("certificate", {
             "value": "/etc/ssl/CDserver.cert.pem",
             "help": "set certificate file",
