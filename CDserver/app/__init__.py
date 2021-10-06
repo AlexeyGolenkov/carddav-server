@@ -32,8 +32,6 @@ from CDserver.log import logger
 import defusedxml.ElementTree as DefusedET
 sys.modules["xml.etree"].ElementTree = ET
 
-VERSION = "3.0.6"
-
 
 class Application(
         ApplicationDeleteMixin, ApplicationGetMixin, ApplicationHeadMixin, ApplicationMkcolMixin,

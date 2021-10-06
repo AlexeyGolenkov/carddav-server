@@ -7,8 +7,6 @@ from CDserver import config, log
 from CDserver.app import Application
 from CDserver.log import logger
 
-VERSION = "3.0.6"
-
 _application = None
 _application_config_path = None
 _application_lock = threading.Lock()
